@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/yalewkidane/epcis-application-2.0#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "request": "^2.88.2"
   }
 }
