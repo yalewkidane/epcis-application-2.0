@@ -5,25 +5,24 @@ require('dotenv').config({ path: "../config/.env" })
 
 const examples = require('./examples');
 
-const options = {
-    uri:process.env.EPCIS_CAPTURE_END_POINT,
-    method: 'POST',
-    body: examples.test,
-    json:true
-}
 
-function postepcis(){
+exports.postepcis = (epcisDoc)=>{
 
-    request(options, function(error, response, body){
+    request({
+        uri:process.env.EPCIS_CAPTURE_END_POINT,
+        method: 'POST',
+        body: epcisDoc,
+        json:true
+
+    }, function(error, response, body){
         if (!error && response.statusCode == 200) {
-            console.log(body);
-        }else{
+            console.log("response " , response.statusCode);
+        }
+        else{
             console.log(error);
         }
       });
 
 }
 
-console.log("capture application");
-console.log(process.env.EPCIS_CAPTURE_END_POINT)
-postepcis()
+

@@ -1,16 +1,21 @@
 
 var request = require('request');
 
+const params= '?MATCH_epc=urn:epc:id:sgtin:0614141.107346.6080'
 
-function getepcis(){
-    request.get(
-    'http://127.0.0.1:8090/epcis/v2',
-    function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            console.log(body);
-        }
-    }
-);
+const uri_val=process.env.EPCIS_QUERY_END_POINT+params;
+console.log(uri_val);
+
+exports.getEPCIS2 = (epcisDoc)=>{
+
+    const options = {
+        uri: uri_val,
+    };
+
+    request.get(options, function (error, response, body) {
+        //callback
+        console.log("here")
+    });
+
 }
 
-console.log("Query application");

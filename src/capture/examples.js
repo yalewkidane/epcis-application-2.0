@@ -200,7 +200,7 @@ exports.test =
           "eventID": "urn:uuid:374d95fc-9457-4a51-bd6a-0bba133845a8",
           "certificationInfo": "https://accreditation-council.example.org/certificate/ABC12345",
           "epcList": [
-            "urn:epc:id:sgtin:0614141.107346.2018"
+            "urn:epc:id:sgtin:0614141.107346.6080"
           ],
           "action": "ADD",
           "bizStep": "receiving",

@@ -4,6 +4,8 @@ require('dotenv').config({ path: "./config/.env" })
 const eventIdGen = require('./utili/eventIdGen.js');
 const examples = require('./capture/examples.js');
 const getDigital = require('./utili/digitalLink.js');
+const capture = require('./capture/capture.js');
+const query = require('./query/query.js');
 
 //getepcis()
 
@@ -22,4 +24,11 @@ const epcis_doc={}
 //const urn="urn:epc:id:sgtin:0614141.107346.2018";
 //getDigital.urn_dl(urn);
 
-console.log(process.env.EPCIS_END_POINT)
+//console.log(process.env.EPCIS_END_POINT)
+
+//capture epcis document
+//capture.postepcis(examples.test)
+
+
+//query epcis document
+query.getEPCIS2();
