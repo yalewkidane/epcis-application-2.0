@@ -181,3 +181,138 @@ exports.AllEvents = [
 }
 
 ];
+
+
+exports.test =
+{
+    "type": "EPCISDocument",
+    "schemaVersion": "2.0",
+    "creationDate": "2013-06-04T14:59:02.099+02:00",
+    "sender": "urn:epc:id:sgln:0353579.00001.0",
+    "receiver": "urn:epc:id:sgln:5012345.00001.0",
+    "instanceIdentifier": "1234567890",
+    "epcisBody": {
+      "eventList": [
+        {
+          "type": "ObjectEvent",
+          "eventTime": "2005-04-05T02:33:31.116Z",
+          "eventTimeZoneOffset": "-06:00",
+          "eventID": "urn:uuid:374d95fc-9457-4a51-bd6a-0bba133845a8",
+          "certificationInfo": "https://accreditation-council.example.org/certificate/ABC12345",
+          "epcList": [
+            "urn:epc:id:sgtin:0614141.107346.2018"
+          ],
+          "action": "ADD",
+          "bizStep": "receiving",
+          "disposition": "in_progress",
+          "readPoint": {
+            "id": "urn:epc:id:sgln:0012345.11111.400"
+          },
+          "bizLocation": {
+            "id": "urn:epc:id:sgln:0012345.11111.0"
+          },
+          "bizTransactionList": [
+            {
+              "type": "po",
+              "bizTransaction": "urn:epc:id:gdti:0614141.00001.1618034"
+            },
+            {
+              "type": "pedigree",
+              "bizTransaction": "urn:epc:id:gsrn:0614141.0000010253"
+            }
+          ],
+          "quantityList": [
+            {
+              "epcClass": "urn:epc:class:lgtin:4012345.012345.998877",
+              "quantity": 200,
+              "uom": "KGM"
+            }
+          ],
+          "sourceList": [
+            {
+              "type": "location",
+              "source": "urn:epc:id:sgln:4012345.00225.0"
+            },
+            {
+              "type": "possessing_party",
+              "source": "urn:epc:id:pgln:4012345.00225"
+            },
+            {
+              "type": "owning_party",
+              "source": "urn:epc:id:pgln:4012345.00225"
+            }
+          ],
+          "destinationList": [
+            {
+              "type": "location",
+              "destination": "urn:epc:id:sgln:0614141.00777.0"
+            },
+            {
+              "type": "possessing_party",
+              "destination": "urn:epc:id:pgln:0614141.00777"
+            },
+            {
+              "type": "owning_party",
+              "destination": "urn:epc:id:pgln:0614141.00777"
+            }
+          ],
+          "sensorElementList": [
+            {
+              "sensorMetadata": {
+                "time": "2019-04-02T13:05:00.000Z",
+                "deviceID": "urn:epc:id:giai:4000001.111",
+                "deviceMetadata": "https://id.gs1.org/8004/4000001111",
+                "rawData": "https://example.org/8004/401234599999",
+                "startTime": "2019-04-02T12:55:01.000Z",
+                "endTime": "2019-04-02T13:55:00.000Z",
+                "dataProcessingMethod": "https://example.com/253/4012345000054987",
+                "bizRules": "https://example.com/253/4012345000054987",
+                "ext1:someFurtherMetadata": "someText"
+              },
+              "sensorReport": [
+                {
+                  "type": "Temperature",
+                  "deviceID": "urn:epc:id:giai:4000001.111",
+                  "rawData": "https://example.org/8004/401234599999",
+                  "dataProcessingMethod": "https://example.com/253/4012345000054987",
+                  "time": "2019-07-19T13:00:00.000Z",
+                  "microorganism": "https://www.ncbi.nlm.nih.gov/taxonomy/1126011",
+                  "chemicalSubstance": "https://identifiers.org/inchikey:CZMRCDWAGMRECN-UGDNZRGBSA-N",
+                  "value": 26,
+                  "component": "example:x",
+                  "stringValue": "SomeString",
+                  "booleanValue": true,
+                  "hexBinaryValue": "f0f0f0",
+                  "uriValue": "https://id.gs1.org/8004/4000001111",
+                  "minValue": 26,
+                  "maxValue": 26.2,
+                  "meanValue": 13.2,
+                  "percRank": 50,
+                  "percValue": 12.7,
+                  "uom": "CEL",
+                  "sDev": 0.1,
+                  "ext1:someFurtherReportData": "someText",
+                  "deviceMetadata": "https://id.gs1.org/8004/4000001111"
+                }
+              ]
+            }
+          ],
+          "persistentDisposition": {
+            "set": [
+              "completeness_verified"
+            ],
+            "unset": [
+              "completeness_inferred"
+            ]
+          }
+        }
+      ]
+    },
+    "@context": [
+          "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
+          {
+            "ext3": "http://example.com/ext3/", "ext2": "http://example.com/ext2/", "ext1": "http://example.com/ext1/"
+          }
+        ]
+  }
+  

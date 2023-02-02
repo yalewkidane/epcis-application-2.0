@@ -1,15 +1,17 @@
 require('dotenv').config({ path: "../config/.env" })
 
-exports.SGLN_URN = (urn)=>{
+exports.urn_dl = (urn)=>{
+    console.log("urn", urn);
     //process.env.ROOT_END_POINT
 }
 
-exports.SGLN = (company_prefix, serial)=>{
+
+exports.sgln_dl = (company_prefix, serial)=>{
 
 }
 
-exports.GLN = (company_prefix, serial)=>{
+exports.gln_dl = (company_prefix)=>{
 
 }
 
-SGLN_URN("")
+//SGLN_URN("")
