@@ -21,8 +21,8 @@ const epcis_doc={}
 //console.log(examples.test);
 
 
-//const urn="urn:epc:id:sgtin:0614141.107346.2018";
-//getDigital.urn_dl(urn);
+const urn="urn:epc:id:sgtin:0614141.107346.2018";
+getDigital.urn_dl(urn);
 
 //console.log(process.env.EPCIS_END_POINT)
 
@@ -31,4 +31,4 @@ const epcis_doc={}
 
 
 //query epcis document
-query.getEPCIS2();
+//query.getEPCIS2();
