@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
-var PORT = 3001;
+var PORT = 8081;
 /*
 var options = {
   swaggerOptions: {
@@ -20,4 +20,4 @@ app.listen(PORT, function(err){
     if (err) console.log("Error in server setup")
     console.log("Server listening on Port", PORT);
     console.log('API-Interface localhost:'+PORT+'/api-docs');
-});
+})
