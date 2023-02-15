@@ -8,13 +8,7 @@
     }
   },
   
-  "servers":{
-  "url": "https://petstore3.swagger.io/api/v3"
-  },
   "servers": [
-    {
-      "url": "https://petstore3.swagger.io/api/v3"
-    },
     {
       "url": "http://localhost:8090/epcis/v2"
     }
