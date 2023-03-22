@@ -4,15 +4,19 @@ services:
            container_name: epcis
            image: yaledoc/epcis2
            restart: always
+           environment:
+            - RunningonDocker=true
+            - PORT=8091
            build: .
+           command: node cluster.js
            ports:
-             - "8090:8090"
+             - "8091:8091"
            links:
              - mongo
        mongo:
              container_name: mongo
              image: mongo:3.6.8
              volumes:
-               - ./data:/data/db
+               - ../data:/data/db
              ports:
                - '27018:27017'
