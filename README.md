@@ -7,7 +7,7 @@ This repository provides
 
 ## To run epcis 2.0 on docker
 ```console
-cd epcisV2
+cd epcisV2/{version}
 docker-compose pull
 docker-compose up
 ```
@@ -30,4 +30,8 @@ You will see the following:
 
 
 ## epcis querying application
+
+
+## epcis MQQT Subscription Example
+You can find the mqtt client example to subscribe and 
 
