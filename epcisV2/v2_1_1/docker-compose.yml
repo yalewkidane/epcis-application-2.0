@@ -2,7 +2,7 @@ version: "3"
 services:
        epcis:
            container_name: epcis
-           image: yaledoc/epcis2
+           image: yaledoc/epcis2:1.1
            restart: always
            environment:
             - RunningonDocker=true
