@@ -15,13 +15,13 @@ server.post('/subscription', function (req, res) {
     res.status(200).send('Hello POST');
  })
  
-server.listen(8082, () => {
+server.listen(7082, () => {
     console.log("EPCIS Clinet for webhook Started");
-    console.log("EPCIS Server running on port ", 8082);
+    console.log("EPCIS Server running on port ", 7082);
 });
 
-scheduleSubscription();
-//streanSubscription();
+//scheduleSubscription();
+streanSubscription();
 function scheduleSubscription(){
     request({
         uri: 'http://127.0.0.1:8090/epcis/v2/queries/UniqueQueryName/subscriptions',
@@ -49,10 +49,10 @@ function scheduleSubscription(){
 
 function streanSubscription(){
     request({
-        uri: 'http://127.0.0.1:8090/epcis/v2/queries/UniqueQueryName/subscriptions',
+        uri: 'http://127.0.0.1:7080/epcis/v2/queries/UniqueQueryName/subscriptions',
         method: 'POST',
         body: {
-            "dest": "http://localhost:8082/subscription",
+            "dest": "http://14.42.170.22:7082/subscription",
             "signatureToken": "13df38d8275b13f05704629e5f1cf3d45d6132d5",
             "stream": true
           },

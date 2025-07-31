@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
-var PORT = 8081;
+var PORT = 7081;
 /*
 var options = {
   swaggerOptions: {

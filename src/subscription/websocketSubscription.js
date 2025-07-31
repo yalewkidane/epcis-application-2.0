@@ -9,7 +9,7 @@ client.on('connectFailed', function(error) {
 
 client.on('connect', function(connection) {
     console.log('connection upgrade');
-    connection.send('Message from the client!');
+    connection.send('Message from the client Yale!');
 
     connection.on('error', function(error) {
         console.log("Connection Error: " + error.toString());
@@ -31,4 +31,6 @@ client.on('connect', function(connection) {
 
 
 //client.connect('ws://localhost:8085/queries/queryNameUnic/events?second=*/10');
-client.connect('ws://localhost:8090/queries/UniqueQueryName/events?second=*/15');
+//client.connect('ws://localhost:8090/queries/UniqueQueryName/events?second=*/15');
+client.connect('ws://localhost:7080/queries/UniqueQueryName/events?stream=true');
+//client.connect('ws://localhost:8090/queries/UniqueQueryName/events?stream=true');
