@@ -19,15 +19,14 @@ Production-ready deployment configuration for EPCIS 2.0 implementation using Doc
 
 ## Quick Start
 
-Deploy EPCIS 2.0 with one command:
+Deploy EPCIS 2.0 in two simple steps:
 
 ```bash
-# Clone the deployment repository
-git clone https://github.com/yalewkidane/epcis-deployment.git
-cd epcis-deployment
+# Step 1: Download EPCIS Docker image
+./docker-pull.sh
 
-# Start all services
-docker-compose up -d
+# Step 2: Deploy all services
+./deploy.sh deploy
 ```
 
 Access the API at: http://localhost:7080/epcis/v2
@@ -54,9 +53,18 @@ This is a Node.js implementation of EPCIS/CBV 2.0 that provides:
 
 ## Docker Image
 
-### Official Image
+### Quick Download
 
-Pull the latest production-ready image:
+Use the provided script to download the EPCIS image:
+
+```bash
+# Download latest EPCIS 2.0 image
+./docker-pull.sh
+```
+
+### Manual Download
+
+If you prefer to download manually:
 
 ```bash
 # Latest stable version (recommended for production)
@@ -94,43 +102,54 @@ docker pull yaledoc/epcis2:2.0-optimized
 - 2GB RAM minimum
 - 10GB disk space
 
-### Step 1: Clone Repository
+### Simple 2-Step Installation
+
+#### Step 1: Download EPCIS Image
+
+First, download the required EPCIS Docker image:
 
 ```bash
-git clone https://github.com/yalewkidane/epcis-deployment.git
-cd epcis-deployment
+# Download EPCIS 2.0 image
+./docker-pull.sh
 ```
 
-### Step 2: Configure Environment
+This script will download the `yaledoc/epcis2:latest` image locally.
+
+#### Step 2: Deploy Services
+
+Deploy all services using the smart deployment script:
 
 ```bash
-# Copy and edit environment variables
-cp .env.example .env
-nano .env
+# Deploy EPCIS 2.0 (automatically uses local images when available)
+./deploy.sh deploy
 ```
 
-### Step 3: Start Services
+The deploy script will:
+- Check for local images first
+- Use local images if available (faster)
+- Pull missing standard images (MongoDB, Redis, etc.) from Docker Hub
+- Start all services
 
-```bash
-# Start all services in background
-docker-compose up -d
-
-# View logs
-docker-compose logs -f epcis
-```
-
-### Step 4: Verify Installation
+#### Step 3: Verify Installation
 
 ```bash
 # Check service status
-curl http://localhost:7080/epcis/v2
+./deploy.sh status
 
-# Expected response:
-{
-  "title": "EPCIS 2.0 Repository",
-  "version": "2.0.0",
-  "status": "running"
-}
+# Test API
+curl http://localhost:7080/epcis/v2
+```
+
+### Alternative Installation Methods
+
+If you prefer manual steps:
+
+```bash
+# Manual Docker Compose (requires all images to be available)
+docker-compose up -d
+
+# Local-only deployment (uses only local images, fails if missing)
+./deploy.sh deploy-local
 ```
 
 ## Configuration

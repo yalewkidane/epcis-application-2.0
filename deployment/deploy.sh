@@ -52,6 +52,41 @@ check_prerequisites() {
     print_info "Prerequisites check passed"
 }
 
+# Check for required local images (returns 0 if all found, 1 if some missing)
+check_local_images() {
+    print_info "Checking for required local images..."
+    
+    local required_images=("yaledoc/epcis2:latest" "yaledoc/mosquitto:latest")
+    local missing_images=()
+    
+    for image in "${required_images[@]}"; do
+        if ! docker image inspect "$image" >/dev/null 2>&1; then
+            missing_images+=("$image")
+            print_warning "Local image not found: $image"
+        else
+            print_info "Found local image: $image"
+        fi
+    done
+    
+    if [ ${#missing_images[@]} -gt 0 ]; then
+        print_warning "Some required local images are missing:"
+        for image in "${missing_images[@]}"; do
+            echo "  - $image"
+        done
+        return 1
+    fi
+    
+    return 0
+}
+
+# Check for required local images (strict - exits on missing)
+check_local_images_strict() {
+    if ! check_local_images; then
+        print_error "Please ensure all required images are available locally before deploying."
+        exit 1
+    fi
+}
+
 # Deploy EPCIS
 deploy() {
     print_header "Deploying EPCIS 2.0"
@@ -63,10 +98,51 @@ deploy() {
         exit 1
     fi
     
-    print_info "Pulling latest images..."
-    docker-compose pull
+    print_info "Checking for local images..."
+    if check_local_images; then
+        print_info "All required images found locally. Using local images."
+        print_info "Starting services with local images..."
+        docker-compose up -d
+    else
+        print_info "Some images missing locally. Attempting to pull from registry..."
+        print_info "Pulling images..."
+        if docker-compose pull --ignore-pull-failures; then
+            print_info "Images pulled successfully. Starting services..."
+            docker-compose up -d
+        else
+            print_warning "Some images could not be pulled. Checking if we can proceed with available images..."
+            if check_local_images; then
+                print_info "Sufficient local images available. Starting services..."
+                docker-compose up -d
+            else
+                print_error "Cannot start services. Required images are not available locally or remotely."
+                exit 1
+            fi
+        fi
+    fi
     
-    print_info "Starting services..."
+    print_info "Waiting for services to be ready..."
+    sleep 30
+    
+    show_status
+    show_info
+}
+
+# Deploy without pulling images (use local images only)
+deploy_local() {
+    print_header "Deploying EPCIS 2.0 (Local Images Only)"
+    
+    check_prerequisites
+    
+    if [[ ! -f ".env" ]]; then
+        print_error ".env file not found. Please copy .env.example to .env and configure it."
+        exit 1
+    fi
+    
+    print_info "Checking local images..."
+    check_local_images_strict
+    
+    print_info "Starting services with local images..."
     docker-compose up -d
     
     print_info "Waiting for services to be ready..."
@@ -134,8 +210,8 @@ show_info() {
 update() {
     print_header "Updating EPCIS 2.0"
     
-    print_info "Pulling latest images..."
-    docker-compose pull
+    print_info "Pulling available images (skipping local-only images)..."
+    docker-compose pull --ignore-pull-failures || print_warning "Some images could not be pulled, using local versions"
     
     print_info "Recreating containers with new images..."
     docker-compose up -d --force-recreate
@@ -171,6 +247,7 @@ USAGE:
 
 COMMANDS:
     deploy      Deploy EPCIS 2.0 services
+    deploy-local Deploy using only local images (no pulling)
     stop        Stop all services
     restart     Restart all services
     status      Show service status
@@ -182,6 +259,7 @@ COMMANDS:
 
 EXAMPLES:
     $0 deploy           # Deploy EPCIS 2.0
+    $0 deploy-local     # Deploy using only local images
     $0 logs epcis       # Show EPCIS service logs
     $0 status           # Check service status
     $0 update           # Update to latest version
@@ -194,6 +272,9 @@ main() {
     case "${1:-help}" in
         "deploy")
             deploy
+            ;;
+        "deploy-local")
+            deploy_local
             ;;
         "stop")
             stop

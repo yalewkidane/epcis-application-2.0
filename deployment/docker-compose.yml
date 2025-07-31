@@ -45,7 +45,7 @@ services:
         fi
       '
     volumes:
-      - mongodb_data:/data/db
+      - ../data:/data/db
     networks:
       - ${DOCKER_NETWORK}
     restart: "no"
@@ -61,7 +61,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
     volumes:
-      - mongodb_data:/data/db
+      - ../data:/data/db
     ports:
       - "27018:27017"
     networks:
@@ -155,8 +155,6 @@ services:
 
 # Persistent Volumes
 volumes:
-  mongodb_data:
-    driver: local
   redis_data:
     driver: local
 
