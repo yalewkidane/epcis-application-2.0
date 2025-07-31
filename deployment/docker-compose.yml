@@ -1,0 +1,167 @@
+version: "3.7"
+services:
+  epcis:
+    container_name: epcis
+    # Production-ready secure image from Docker Hub
+    image: yaledoc/epcis2:latest
+    restart: always
+    environment:
+      - RunningonDocker=true
+      - RunningMqtt=true
+      - PORT=${EPCIS_SERVER_PORT}
+      - REDIS_HOST_DOCKER=redis
+    env_file:
+      - .env
+    command: pm2-runtime start bootstrap.js --name oliot-server
+    ports:
+      - "${EPCIS_SERVER_PORT}:${EPCIS_SERVER_PORT}"
+    depends_on:
+      - mongo
+      - mosquitto
+      - redis
+    networks:
+      - ${DOCKER_NETWORK}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${EPCIS_SERVER_PORT}/epcis/v2"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # MongoDB KeyFile Generator
+  mongo-keygen:
+    image: mongo:4.4.4
+    container_name: mongo-keygen
+    entrypoint: >
+      bash -c '
+        set -e
+        if [ ! -f /data/db/mongo-keyfile ]; then
+          echo "▶ generating keyfile";
+          openssl rand -base64 756 > /data/db/mongo-keyfile
+          chmod 400 /data/db/mongo-keyfile
+          chown 999:999 /data/db/mongo-keyfile
+        else
+          echo "keyfile exists – skip";
+        fi
+      '
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - ${DOCKER_NETWORK}
+    restart: "no"
+
+  # MongoDB Database
+  mongo:
+    image: mongo:4.4.4
+    container_name: mongo
+    depends_on:
+      - mongo-keygen
+    command: ["mongod", "--replSet", "rs0", "--keyFile", "/data/db/mongo-keyfile", "--auth", "--bind_ip_all"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27018:27017"
+    networks:
+      - ${DOCKER_NETWORK}
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.adminCommand({ ping: 1 })"]
+      interval: 10s
+      start_period: 30s
+      retries: 5
+
+  # MongoDB Replica Set Initializer
+  mongo-init:
+    image: mongo:4.4.4
+    container_name: mongo-init
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: >
+      bash -c '
+        echo "▶ waiting for mongo to be ready...";
+        until mongo -u "$$MONGODB_USER" -p "$$MONGODB_PASSWORD" --host mongo --authenticationDatabase admin --eval "db.adminCommand({ ping: 1 })" >/dev/null 2>&1; do
+          echo "waiting for mongo...";
+          sleep 2;
+        done;
+        echo "▶ initiating replica set…";
+        mongo -u "$$MONGODB_USER" -p "$$MONGODB_PASSWORD" --host mongo --authenticationDatabase admin --eval "
+          try {
+            rs.initiate({_id: \"rs0\", members:[{ _id: 0, host: \"mongo:27017\" }]});
+            print(\"Replica set initiated successfully\");
+          } catch(e) {
+            if (e.message.includes(\"already initialized\")) {
+              print(\"Replica set already initialized\");
+            } else {
+              print(\"Error: \" + e.message);
+              throw e;
+            }
+          }
+          rs.status();
+        "
+      '
+    env_file:
+      - .env
+    networks:
+      - ${DOCKER_NETWORK}
+    restart: "no"
+
+  # MQTT Broker
+  mosquitto:
+    image: yaledoc/mosquitto:latest
+    container_name: mqtt_broker
+    ports:
+      - "${MQTT_PORT}:1883"
+      - "9001:9001"
+    networks:
+      - ${DOCKER_NETWORK}
+    restart: always
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "test", "-m", "health_check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ${DOCKER_NETWORK}
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Persistent Volumes
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# Network Configuration
+networks:
+  traceability_network:
+    driver: bridge
+    name: ${DOCKER_NETWORK}
